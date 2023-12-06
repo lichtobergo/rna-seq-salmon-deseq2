@@ -1,1 +1,2 @@
-This folder contains scripts for used in this project.
+# Scripts Folder
+Here are all the scripts stored that are ussed in the project.
