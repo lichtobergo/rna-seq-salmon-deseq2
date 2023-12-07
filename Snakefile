@@ -1,7 +1,7 @@
 # An example of sample ung MultiQC in a snakemake workflow.
 import pandas as pd
 
-configfile: "config/config.yaml"
+configfile: "00_config/config.yaml"
 print("Config is: ", config)
 samples = (
     pd.read_csv(config["samples"], sep="\t")
@@ -55,9 +55,9 @@ rule salmon_quant:
         unpack(fq_dict_from_sample),
         index = config["index"]["location"]
     output:
-        "data/quants/{sample}/quant.sf"
+        "03_pseudoalignment/quants/{sample}/quant.sf"
     params:
-        dir = "data/quants/{sample}"
+        dir = "03_pseudoalignment/quants/{sample}"
     benchmark:
         "benchmarks/salmon_quant/{sample}.tsv"
     threads: 4
@@ -72,7 +72,7 @@ rule salmon_quant:
 rule multiqc:
     input:
         expand(["01_QC/Fastqc/{sample}_{reads}_fastqc.html",
-                "data/quants/{sample}/quant.sf"],
+                "03_pseudoalignment/quants/{sample}/quant.sf"],
                 sample=samples["sample.name"], reads=["R1", "R2"]),
     output:
         "01_QC/Multiqc/multiqc_report.html",
