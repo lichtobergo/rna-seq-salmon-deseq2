@@ -9,7 +9,7 @@ samples = (
     .sort_index()
 )
 
-samples = samples.iloc[:2]
+# samples = samples.iloc[:2]
 READS = ["R1"",R2"]
 print(samples)
 
@@ -22,7 +22,17 @@ def fq_dict_from_sample(wildcards):
         "fq2": samples.loc[wildcards.sample, "read2"]
     }
 
-
+def get_fastqs(wildcards):
+    return dict(
+        zip(
+            ["fq1", "fq2"],
+            expand(
+                "04_results/trimmed/{sample}_{pair}.fastq.gz",
+                pair = ["R1", "R2"],
+                **wildcards,
+            ),
+        )
+    )
 #print(sample)
 rule all:
     input:
@@ -41,8 +51,8 @@ rule fastqc_file:
         "01_QC/Fastqc/{sample}_R2_fastqc.html",
         "01_QC/Fastqc/{sample}_R2_fastqc.zip"
     benchmark:
-        "benchmarks/fastqc/{sample}.tsv"
-    threads: 1
+        "02_benchmarks/fastqc/{sample}.tsv"
+    threads: 2
     conda: "fastqc"
     shell:
         """
@@ -52,15 +62,15 @@ rule fastqc_file:
 
 rule salmon_quant:
     input:
-        unpack(fq_dict_from_sample),
+        unpack(get_fastqs),
         index = config["index"]["location"]
     output:
         "03_pseudoalignment/quants/{sample}/quant.sf"
     params:
         dir = "03_pseudoalignment/quants/{sample}"
     benchmark:
-        "benchmarks/salmon_quant/{sample}.tsv"
-    threads: 4
+        "02_benchmarks/salmon_quant/{sample}.tsv"
+    threads: 10
     conda:
         "salmon"
     shell:
@@ -80,9 +90,23 @@ rule multiqc:
     params:
         extra="-ip -v",
     benchmark:
-        "benchmarks/multiqc/multiqc.tsv"
+        "02_benchmarks/multiqc/multiqc.tsv"
     wrapper:
         "v3.0.2/bio/multiqc"
-    
+
+rule trim_galore:
+    input:
+        unpack(fq_dict_from_sample)
+    output:
+        fasta_fwd = "04_results/trimmed/{sample}_R1.fastq.gz",
+        report_fwd = "04_results/trimmed/{sample}_R1.trimming_report.txt",
+        fasta_rev = "04_results/trimmed/{sample}_R2.fastq.gz",
+        report_rev = "04_results/trimmed/{sample}_R2.trimming_report.txt",
+    benchmark:
+        "02_benchmarks/trim_galore/{sample}.tsv"
+    threads: 4
+    wrapper:
+        "v3.0.3/bio/trim_galore/pe"
+        
 
 
