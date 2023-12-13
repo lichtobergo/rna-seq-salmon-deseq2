@@ -27,7 +27,7 @@ def get_fastqs(wildcards):
         zip(
             ["fq1", "fq2"],
             expand(
-                "04_results/trimmed/{sample}_{pair}.fastq.gz",
+                "06_results/trimmed/{sample}_{pair}.fastq.gz",
                 pair = ["R1", "R2"],
                 **wildcards,
             ),
@@ -36,28 +36,28 @@ def get_fastqs(wildcards):
 #print(sample)
 rule all:
     input:
-        expand("01_QC/Fastqc/{sample}_{reads}_fastqc.{ext}", 
+        expand("04_QC/Fastqc/{sample}_{reads}_fastqc.{ext}", 
                 sample=samples["sample.name"], 
                 reads=["R1", "R2"], 
                 ext=["html", "zip"]),
-         "01_QC/Multiqc/multiqc_report.html",
+         "04_QC/Multiqc/multiqc_report.html",
         
 rule fastqc_file:
     input:
         unpack(fq_dict_from_sample)
     output:
-        "01_QC/Fastqc/{sample}_R1_fastqc.html",
-        "01_QC/Fastqc/{sample}_R1_fastqc.zip",
-        "01_QC/Fastqc/{sample}_R2_fastqc.html",
-        "01_QC/Fastqc/{sample}_R2_fastqc.zip"
+        "04_QC/Fastqc/{sample}_R1_fastqc.html",
+        "04_QC/Fastqc/{sample}_R1_fastqc.zip",
+        "04_QC/Fastqc/{sample}_R2_fastqc.html",
+        "04_QC/Fastqc/{sample}_R2_fastqc.zip"
     benchmark:
-        "02_benchmarks/fastqc/{sample}.tsv"
+        "05_benchmarks/fastqc/{sample}.tsv"
     threads: 2
     conda: "fastqc"
     shell:
         """
-        mkdir -p 01_QC/Fastqc
-        fastqc {input.fq1} {input.fq2} -t {threads} --outdir 01_QC/Fastqc
+        mkdir -p 04_QC/Fastqc
+        fastqc {input.fq1} {input.fq2} -t {threads} --outdir 04_QC/Fastqc
         """
 
 rule salmon_quant:
@@ -65,11 +65,11 @@ rule salmon_quant:
         unpack(get_fastqs),
         index = config["index"]["location"]
     output:
-        "03_pseudoalignment/quants/{sample}/quant.sf"
+        "06_results/pseudoaligment/quants/{sample}/quant.sf"
     params:
-        dir = "03_pseudoalignment/quants/{sample}"
+        dir = "06_results/pseudoaligment/quants/{sample}"
     benchmark:
-        "02_benchmarks/salmon_quant/{sample}.tsv"
+        "05_benchmarks/salmon_quant/{sample}.tsv"
     threads: 10
     conda:
         "salmon"
@@ -81,16 +81,16 @@ rule salmon_quant:
 
 rule multiqc:
     input:
-        expand(["01_QC/Fastqc/{sample}_{reads}_fastqc.html",
-                "03_pseudoalignment/quants/{sample}/quant.sf"],
+        expand(["04_QC/Fastqc/{sample}_{reads}_fastqc.html",
+                "06_results/pseudoaligment/quants/{sample}/quant.sf"],
                 sample=samples["sample.name"], reads=["R1", "R2"]),
     output:
-        "01_QC/Multiqc/multiqc_report.html",
-        directory("01_QC/multiqc_data"),
+        "04_QC/Multiqc/multiqc_report.html",
+        directory("04_QC/multiqc_data"),
     params:
         extra="-ip -v",
     benchmark:
-        "02_benchmarks/multiqc/multiqc.tsv"
+        "05_benchmarks/multiqc/multiqc.tsv"
     wrapper:
         "v3.0.2/bio/multiqc"
 
@@ -98,15 +98,60 @@ rule trim_galore:
     input:
         unpack(fq_dict_from_sample)
     output:
-        fasta_fwd = "04_results/trimmed/{sample}_R1.fastq.gz",
-        report_fwd = "04_results/trimmed/{sample}_R1.trimming_report.txt",
-        fasta_rev = "04_results/trimmed/{sample}_R2.fastq.gz",
-        report_rev = "04_results/trimmed/{sample}_R2.trimming_report.txt",
+        fasta_fwd = "06_results/trimmed/{sample}_R1.fastq.gz",
+        report_fwd = "06_results/trimmed/{sample}_R1.trimming_report.txt",
+        fasta_rev = "06_results/trimmed/{sample}_R2.fastq.gz",
+        report_rev = "06_results/trimmed/{sample}_R2.trimming_report.txt",
     benchmark:
-        "02_benchmarks/trim_galore/{sample}.tsv"
+        "05_benchmarks/trim_galore/{sample}.tsv"
     threads: 4
     wrapper:
         "v3.0.3/bio/trim_galore/pe"
         
+rule tximport:
+    input:
+        quant = expand("06_results/pseudoaligment/quants/{sample}/quant.sf", sample=samples["sample.name"]),
+        tx_to_gene = "03_resources/tx2gene.tsv"
+    output:
+        txi = "06_results/txi.RDS"
+    params:
+        extra = "type='salmon', txOut=FALSE"
+    #benchmark:
+    #    "05_benchmarks/tximport/{sample}.tsv"
+    threads: 1
+    wrapper:
+        "v3.1.0/bio/tximport"
 
+rule test_DESeqDataSet_from_tximport:
+    input:
+        txi="06_results/txi.RDS",
+        colData=config["samples"],
+    output:
+        "06_results/dds_txi.RDS",
+    threads: 1
+    log:
+        "logs/DESeqDataSet/txi.log",
+    params:
+        formula="~group",  # Required R statistical formula
+        # factor="condition", # Optionally used for relevel
+        # reference_level="A", # Optionally used for relevel
+        # tested_level="B", # Optionally used for relevel
+        # min_counts=0, # Optionally used to filter low counts
+        # extra="", # Optional parameters provided to import function
+    wrapper:
+        "v3.1.0/bio/deseq2/deseqdataset"
+
+rule plot_PCA:
+    input:
+        "06_results/dds_txi.RDS"
+    output:
+        "06_results/plots/pca.png"
+    params:
+        pca_labels = config["pca"]["labels"]
+    #conda: 
+    #    "envs/pca.yaml"
+    log:
+        "logs/plots/pca/plot_pca.log"
+    script:
+        "02_scripts/plotPCA.R"
 

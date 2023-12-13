@@ -3,8 +3,7 @@
 .RData
 .Ruserdata
 .snakemake
-00_data/
-01_QC/
-02_benchmarks
-03_pseudoalignment/
-04_results/
+01_data/
+04_QC/
+05_benchmarks/
+06_results/
