@@ -1,0 +1,21 @@
+sample.number	sample.name	date	sample.group	Comments
+01	R_01	19.06.23	ctrl	
+02	N_01	20.06.23	normoxic	
+03	H_01	20.06.23	hypoxic	
+04	R_02	21.06.23	ctrl	
+05	N_02	22.06.23	normoxic	
+06	H_02	22.06.23	hypoxic	
+07	N_03	27.06.23	normoxic	
+08	H_03	27.06.23	hypoxic	
+09	R_04	28.06.23	ctrl	
+10	N_04	29.06.23	normoxic	Pellet almost not seeble by RNA extraction
+11	H_04	29.06.26	hypoxic	
+12	R_05	12.07.23	ctrl	
+13	N_05	13.07.23	normoxic	
+14	H_05	13.07.23	hypoxic	
+15	R_06	18.07.23	ctrl	
+16	N_06	19.07.23	normoxic	
+17	H_06	19.07.23	hypoxic	
+18	R_07	19.07.23	ctrl	
+19	N_07	20.07.23	normoxic	
+20	H_07	20.07.23	hypoxic	

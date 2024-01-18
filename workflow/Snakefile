@@ -1,0 +1,37 @@
+
+##### setup report #####
+configfile: "config/config.yaml"
+print("Config is: ", config)
+
+report: "report/workflow.rst"
+
+
+
+##### load rules ####
+
+include: "rules/common.smk"
+include: "rules/trim.smk"
+include: "rules/align.smk"
+include: "rules/qc.smk"
+include: "rules/diffexp.smk"
+
+
+
+##### load rules ####
+
+rule all:
+    input:
+        get_final_output()
+        # expand("results/qc/Fastqc/{sample}_{reads}_fastqc.{ext}", 
+        #         sample=samples["sample.name"], 
+        #         reads=["R1", "R2"], 
+        #         ext=["html", "zip"]),
+        # expand("results/qc/fastqc/{sample}_{pair}_fastqc.{ext}", sample=samples["sample.name"], pair=["R1", "R2"], ext=['html', 'zip']),
+        # "results/qc/multiqc/multiqc_report.html",
+        # "results/plots/pca.png",
+        # expand(
+        #     "results/diffexp/{contrast}.diffexp.symbol.tsv",
+        #     contrast=config["diffexp"]["contrasts"]
+        # ),
+        # "results/normcounts.symbol.tsv"
+        
