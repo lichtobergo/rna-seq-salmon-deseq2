@@ -1,5 +1,5 @@
 library(biomaRt)
-library(tidyverse)
+suppressPackageStartupMessages(library(tidyverse))
 # useful error messages upon aborting
 library("cli")
 

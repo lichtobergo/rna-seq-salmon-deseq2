@@ -10,8 +10,7 @@ rule salmon_quant:
         "workflow/benchmarks/salmon_quant/{sample}.tsv"
     priority: 50
     threads: 10
-    conda:
-        "salmon"
+    conda: "../envs/salmon.yaml"
     shell:
         """
         salmon quant -i {input.index} -l A -p {threads} --gcBias --validateMappings -o {params.dir} -1 {input.fq1} -2 {input.fq2}

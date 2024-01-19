@@ -23,7 +23,7 @@ rule DESeqDataSet_from_tximport:
     log:
         "workflow/logs/DESeqDataSet/txi.log",
     params:
-        formula="~sample.group",  # Required R statistical formula
+        formula="~group",  # Required R statistical formula
         # factor="condition", # Optionally used for relevel
         # reference_level="A", # Optionally used for relevel
         # tested_level="B", # Optionally used for relevel
@@ -41,8 +41,8 @@ rule gene_2_symbol:
         species=get_bioc_species_name(),
     log:
         "workflow/logs/gene2symbol/{prefix}.log",
-    # conda:
-    #     "../envs/biomart.yaml"
+    conda:
+        "../envs/biomart.yaml"
     script:
         "../scripts/gene2symbol.R"
 
@@ -57,9 +57,10 @@ rule deseq2_init:
     threads: get_deseq2_threads()
     log:
         "workflow/logs/deseq2_init/init.log"
+    conda:
+        "../envs/deseq2.yaml"
     script:
         "../scripts/deseq2-init.R"
-
 
 rule plot_PCA:
     input:
@@ -69,8 +70,8 @@ rule plot_PCA:
         report("results/plots/pca.{variable}.png", "../report/pca.rst"),
     params:
         pca_labels = config["pca"]["labels"]
-    #conda: 
-    #    "envs/pca.yaml"
+    conda:
+        "../envs/deseq2.yaml"
     log:
         "workflow/logs/plots/pca/pca.{variable}.log"
     script:
@@ -85,6 +86,8 @@ rule diffexp:
         contrast = get_contrast
     log:
         "workflow/logs/deseq2/{contrast}.diffexp.log",
+    conda:
+        "../envs/deseq2.yaml"
     threads: get_deseq2_threads()
     script:
         "../scripts/deseq2.R"

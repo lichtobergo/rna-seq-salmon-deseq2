@@ -9,7 +9,8 @@ rule fastqc_raw:
     benchmark:
         "workflow/benchmarks/fastqc/{sample}.tsv"
     threads: 1
-    conda: "qc"
+    conda:
+        "../envs/fastqc.yaml"
     shell:
         """
         fastqc {input.fq1}  --outdir results/qc/fastqc/ --quiet &&
@@ -27,7 +28,8 @@ rule fastqc_trimmed:
     benchmark:
         "workflow/benchmarks/fastqc/{sample}.tsv"
     threads: 1
-    conda: "qc"
+    conda:
+        "../envs/fastqc.yaml"
     shell:
         """
         fastqc {input.fq1}  --outdir results/qc/fastqc/trimmed/ --quiet &&

@@ -52,7 +52,7 @@ plotPCAcustom = function(object, intgroup="condition",
 
 
 library(DESeq2)
-library(tidyverse)
+suppressPackageStartupMessages(library(tidyverse))
 library(patchwork)
 
 # load DESeq2 data
@@ -137,8 +137,8 @@ plot_34 <- ggplot(
   ) + 
   ggtitle("PCA-plot")
 
-plot_12 + plot_34 + plot_layout(guides = "collect")
-ggsave(snakemake@output[[1]], width=12, height = 6)
+plot <- plot_12 + plot_34 + plot_layout(guides = "collect")
+ggsave(plot = plot, filename = snakemake@output[[1]], width=12, height = 6)
 
 # png(snakemake@output[[1]])
 # print(plot)
