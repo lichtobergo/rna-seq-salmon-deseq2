@@ -23,7 +23,7 @@ rule DESeqDataSet_from_tximport:
     log:
         "workflow/logs/DESeqDataSet/txi.log",
     params:
-        formula="~group",  # Required R statistical formula
+        formula=config["diffexp"]["model"],  # Required R statistical formula
         # factor="condition", # Optionally used for relevel
         # reference_level="A", # Optionally used for relevel
         # tested_level="B", # Optionally used for relevel
@@ -53,7 +53,8 @@ rule deseq2_init:
         "results/deseq2/dds.RDS",
         "results/deseq2/normcounts.tsv",
     params:
-        get_bioc_species_name()
+        get_bioc_species_name(),
+        get_count_threshold()
     threads: get_deseq2_threads()
     log:
         "workflow/logs/deseq2_init/init.log"
@@ -91,3 +92,64 @@ rule diffexp:
     threads: get_deseq2_threads()
     script:
         "../scripts/deseq2.R"
+
+rule Enhanced_Volcano:
+    input:
+        "results/diffexp/{contrast}.diffexp.symbol.tsv"
+    output:
+        # "results/plots/pca.png",
+        report("results/plots/volcano.{contrast}.png", "../report/volcano.rst"),
+    params:
+        contrast = get_contrast
+    conda:
+        "../envs/EnhancedVolcano.yaml"
+    log:
+        "workflow/logs/plots/volcano/volcano.{contrast}.log"
+    script:
+        "../scripts/EnhancedVolcano.R"
+
+rule fgsea_GO:
+    input:
+        "results/diffexp/{contrast}.diffexp.symbol.tsv"
+    output:
+        # "results/plots/pca.png",
+        report("results/plots/gseaGO.{contrast}.png", "../report/gsea.rst"),
+    params:
+        contrast = get_contrast
+    conda:
+        "../envs/fgsea.yaml"
+    log:
+        "workflow/logs/plots/fgsea/fgseaGO.{contrast}.log"
+    script:
+        "../scripts/fgseaGO.R"
+
+rule fgsea_MSigDB:
+    input:
+        "results/diffexp/{contrast}.diffexp.symbol.tsv"
+    output:
+        # "results/plots/pca.png",
+        report("results/plots/gseaMSigDB.{contrast}.png", "../report/gsea.rst"),
+    params:
+        contrast = get_contrast
+    conda:
+        "../envs/fgsea.yaml"
+    log:
+        "workflow/logs/plots/fgsea/fgseaMSigDB.{contrast}.log"
+    script:
+        "../scripts/fgseaMSigDB.R"
+
+rule plotTopGenes:
+    input:
+        res = "results/diffexp/{contrast}.diffexp.symbol.tsv",
+        dds = "results/deseq2/dds.RDS",
+    output:
+        upregulated = report("results/plots/top10Up.{contrast}.png", "../report/topGenes.rst"),
+        downregulated = report("results/plots/top10Down.{contrast}.png", "../report/topGenes.rst"),
+    params:
+        contrast = get_contrast
+    conda:
+        "../envs/topGenes.yaml"
+    log:
+        "workflow/logs/plots/plotTopGenes/topGenes.{contrast}.log"
+    script:
+        "../scripts/plotTopGenes.R"

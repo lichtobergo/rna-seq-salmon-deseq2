@@ -38,6 +38,21 @@ def get_final_output():
         final_output.extend(
             expand("results/plots/pca.{variable}.png", variable=pca_variables)
         )
+    final_output.append(
+        expand("results/plots/volcano.{contrast}.png", contrast=config["diffexp"]["contrasts"])
+    )
+    # if config["enrichment"]["fgsea"]["activate"]:
+    if config["enrichment"]["fgsea"]["GO"]["activate"]:
+        final_output.append(
+            expand("results/plots/gseaGO.{contrast}.png", contrast=config["diffexp"]["contrasts"])
+        )
+    if config["enrichment"]["fgsea"]["MSigDB"]["activate"]:
+        final_output.append(
+            expand("results/plots/gseaMSigDB.{contrast}.png", contrast=config["diffexp"]["contrasts"])
+        )
+    final_output.append(
+        expand("results/plots/top10{dir}.{contrast}.png", dir=["Up", "Down"], contrast=config["diffexp"]["contrasts"])
+    )
     return final_output      
 
 def fq_dict_from_sample(wildcards):
@@ -51,7 +66,7 @@ def get_fastqs(wildcards):
         zip(
             ["fq1", "fq2"],
             expand(
-                "results/trimmed/{sample}_{pair}_trimmed.fastq.gz",
+                "data/trimmed/{sample}_{pair}_trimmed.fastq.gz",
                 pair = ["R1", "R2"],
                 **wildcards,
             ),
@@ -70,7 +85,7 @@ def get_fq(wildcards):
             zip(
                 ["fq1", "fq2"],
                 expand(
-                    "results/trimmed/{sample}_{pair}_trimmed.fastq.gz",
+                    "data/trimmed/{sample}_{pair}_trimmed.fastq.gz",
                     pair = ["R1", "R2"],
                     **wildcards
                 )
@@ -89,3 +104,9 @@ def get_deseq2_threads(wildcards=None):
 
 def get_contrast(wildcards):
     return config["diffexp"]["contrasts"][wildcards.contrast]
+
+def get_count_threshold():
+    if config["diffexp"]["prefilter"]["custom"] == None:
+        return config["diffexp"]["prefilter"]["threshold"]
+    else:
+        return config["diffexp"]["prefilter"]["custom"]

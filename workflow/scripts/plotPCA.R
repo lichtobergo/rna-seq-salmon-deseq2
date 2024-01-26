@@ -54,6 +54,7 @@ plotPCAcustom = function(object, intgroup="condition",
 library(DESeq2)
 suppressPackageStartupMessages(library(tidyverse))
 library(patchwork)
+library(ggtext)
 
 # load DESeq2 data
 dds <- readRDS(snakemake@input[[1]])
@@ -80,7 +81,9 @@ pca_34 <- plotPCAcustom(
   returnData = TRUE
 )
 
+save.image("pcaDebug.RData")
 
+covariate <- snakemake@wildcards[["variable"]]
 percent_var <- round(100 * attr(pca_12, "percentVar"))
 
 plot_12<- ggplot(
@@ -88,27 +91,42 @@ plot_12<- ggplot(
   aes_string(
     x = "PC1",
     y = "PC2",
-    color = snakemake@wildcards[["variable"]],
-    label = "name"
+    color = snakemake@wildcards[["variable"]]
+    # label = "name"
   )
 ) +
-  geom_point(size = 2.5) +
-  ggrepel::geom_label_repel(size = 3, max.overlaps = 20) +
-  #scale_color_manual(values = custom_colors$discrete) +
+  geom_point(size = 2) +
+  ggrepel::geom_text_repel(
+    aes(label = name) , 
+    size = 3, #
+    max.overlaps = 20,
+    show.legend = FALSE
+  ) +
+  scale_color_brewer(palette = "Dark2") +
   # scale_color_manual(values = c("#66c2a5", "#fc8d62")) +
   xlab(paste0("PC1: ", percent_var[1], "% variance")) +
   ylab(paste0("PC2: ", percent_var[2], "% variance")) +
-  theme_bw() +
+  theme_bw(base_size = 8) +
+  # ggtitle(
+  #   label = str_glue("Principal components 1 and 2 color coded for covariate **{covariate}**")
+  #   ) +
   theme(
-    text = element_text(colour = "black"),
-    axis.text = element_text(colour = "black"),
-    line = element_line(colour = "black"),
+    text = element_text(colour = "grey30"),
+    axis.text = element_text(colour = "grey30"),
+    line = element_line(colour = "grey30"),
     panel.grid = element_blank(),
     legend.justification = "top",
-    plot.title = element_text(hjust = 0.5)
-  ) + 
-  ggtitle("PCA-plot")
-
+    plot.subtitle = element_textbox_simple(),
+    plot.title = element_textbox_simple()
+  ) 
+  
+  # ggtitle(
+  #   label = NULL,
+  #   subtitle = bquote(
+  #     "Principal components 1 and 2 color coded for covariate" 
+  #     ~ bold(.(snakemake@wildcards[["variable"]]))
+  #   )
+  # )
 percent_var <- round(100 * attr(pca_34, "percentVar"))
 
 plot_34 <- ggplot(
@@ -116,32 +134,45 @@ plot_34 <- ggplot(
   aes_string(
     x = "PC3",
     y = "PC4",
-    color = snakemake@wildcards[["variable"]],
-    label = "name"
+    color = snakemake@wildcards[["variable"]]
   )
 ) +
-  geom_point(size = 2.5) +
-  ggrepel::geom_label_repel(size = 3, max.overlaps = 20) +
-  #scale_color_manual(values = custom_colors$discrete) +
+  geom_point(size = 2) +
+  ggrepel::geom_text_repel(
+    aes(label = name) , 
+    size = 3, #
+    max.overlaps = 20,
+    show.legend = FALSE
+  ) +
+  scale_color_brewer(palette = "Dark2") +
   # scale_color_manual(values = c("#66c2a5", "#fc8d62")) +
-  xlab(paste0("PC1: ", percent_var[1], "% variance")) +
-  ylab(paste0("PC2: ", percent_var[2], "% variance")) +
-  theme_bw() +
+  xlab(paste0("PC3: ", percent_var[1], "% variance")) +
+  ylab(paste0("PC4: ", percent_var[2], "% variance")) +
+  theme_bw(base_size = 8) + 
+  # ggtitle(
+  #   label = str_glue("Principal components 3 and 4 color coded for covariate **einseheshehehehehehehehehehehehehehehehehehehehr langer string**")
+  # ) +
   theme(
-    text = element_text(colour = "black"),
-    axis.text = element_text(colour = "black"),
-    line = element_line(colour = "black"),
+    text = element_text(colour = "grey30"),
+    axis.text = element_text(colour = "grey30"),
+    line = element_line(colour = "grey30"),
     panel.grid = element_blank(),
     legend.justification = "top",
-    plot.title = element_text(hjust = 0.5)
-  ) + 
-  ggtitle("PCA-plot")
+    plot.title = element_textbox_simple()
+  )
 
-plot <- plot_12 + plot_34 + plot_layout(guides = "collect")
-ggsave(plot = plot, filename = snakemake@output[[1]], width=12, height = 6)
+
+plot <- plot_12 + plot_34 + plot_layout(guides = "collect") +
+  plot_annotation(
+    title = 'Principal Component Analysis',
+    subtitle = str_glue("The first 4 principal components of the data are plotted and samples are color coded for the covariate **{covariate}**"),
+    caption = 'Each dot represents a sample and is labelled with the sample name.',
+    theme = theme(text = element_text(size = 8), plot.subtitle = element_textbox_simple())
+  )
+ggsave(plot = plot, filename = snakemake@output[[1]], width=20, height = 11, units = "cm")
 
 # png(snakemake@output[[1]])
 # print(plot)
 # dev.off()
 
-save.image(file = "debugR.RData")
+#save.image(file = "debugR.RData")

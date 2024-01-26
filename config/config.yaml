@@ -13,19 +13,20 @@ trimming:
   # skip trimming: false or true
   skip: False
   # the sequencing adapter
-  adapter: ACGGATCGATCGATCGATCGAT
+  adapter: ""
 
 ref:
   # Ensembl species name
   species: rattus_norvegicus
   # Ensembl release
   release: 110
-  # Genome build
-  build: mRatBN7.2
+  # Ensembl assembly
+  assembly: mRatBN7.2
+  g2n: resources/biomart.Rnor.tsv
   
 index: 
   activate: False
-  location: /home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
+  location: home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
 
 
 pca:
@@ -38,15 +39,28 @@ pca:
   # - relatively_uninteresting_variable_X
   # - possible_batch_effect_Y
   labels:
-    ""
+    - group
 
 diffexp:
+  # set the threshold to filter out uninformative genes
+  prefilter:
+    # counts for each gene (row) are summed and all rowsums below the threhsold
+    # are filtered out
+    threshold: 10
+    # give custom formula which is not rowSums to filter out uninformative genes 
+    custom:
   # variables for whome you are interested in whether they have an effect on
   # expression levels
+  # significance level to use for volcano, ma- and qq-plots
+  sig-level:
+    diffexp: 0.05
+    volcano-plot: 0.05
   variables_of_interest:
     sample.group:
       # any fold change will be relative to this factor level
-      base_level: ctrl
+      base_level: R
+    tissue:
+      base_level: blood
   # variables whose effect you want to model to separate them from your
   # variables_of_interest
   batch_effects:
@@ -66,26 +80,46 @@ diffexp:
   # If you want to introduce different assumptions into your model, you can
   # specify a different model to use, for example skipping the interaction:
   # model: ~jointly_handled + treatment_1 + treatment_2
-  model: ""
+  model: ~group
 
     # contrasts for the deseq2 results method
   contrasts:
     # arbitrary-name:
     #    - columnname
-    #    - effect1
-    #    - effect2
-    ctrl-vs-normoxic:
-      - sample.group
-      - ctrl
-      - normoxic
-    normoxic-vs-hypoxic:
-      - sample.group
-      - normoxic
-      - hypoxic
-    ctr-vs-hypoxic:
-      - sample.group
-      - ctrl
-      - hypoxic
+    #    - effect1      # positive log2FC indicate upgregulated in this group
+    #    - effect2      # negative log2FC indicate higher expression in this group
+    M.ctx-vs-R.ctx:
+      - group
+      - M.ctx
+      - R.ctx
+    M.blood-vs-R.blood:
+      - group
+      - M.blood
+      - R.blood
+
+enrichment:
+  fgsea:
+    # tool is only run if set to `true`
+    activate: True
+    # specify the column used for the ranking of genes. If set to "rank", ranking metric will be calculated as sign(log2Foldchange) * -log10(pvalue)
+    ranking_metric: "log2FoldChange"
+    GO:
+      # run fgsea with using Gene Ontology database. will run if set to "true"
+      activate: true
+      # specify the GO domain to use for the GSEA: can be one of: Biological process (GO:BP), cellular component (GO:CC), molecular function (GO:MF)
+      GO_domain: "GO:BP"
+    MSigDB:
+      # run fgsea with using MSigDb gene set. will run if set to "true"
+      activate: True
+      # Specify gene set category for GSEA. Example "H" for Hallmark gene set
+      category: "H"
+      # Optional: Specify gene set subcategory for GSEA. Example "CP" or "CP:KEGG" for sub- and subsubcategories of C2 gene set
+      subcategory: 
+      # Custom or downloaded gene sets can also be provided for GSEA. File need to be in .gmt format
+      gene_sets_file: 
+    fdr_gene_set: 0.05
+    # minimum achievable p-value  (equivalent to the reciprocal of the number of permutations, see fgsea docs)
+    eps: 1.0e-50
 
 params:
   fastqc: ""

@@ -1,56 +1,85 @@
 library(tidyverse)
 library(readxl)
 
-sample_sheet <- read_delim(
-  "config/sample_sheet.txt", 
-  delim = "\t", escape_double = FALSE, 
-  col_types = cols(Comments = col_skip()), 
-  trim_ws = TRUE
-) %>% 
-  dplyr::filter(
-    sample.name != "N_04"
-  ) %>% 
-  relocate(
-    sample.name,
-    .before = sample.number
-  ) %>% 
-  arrange(sample.name) %>% 
-  mutate(
-    sample.name = str_remove(sample.name, "_")
+sample_sheet_p1424 <- read_excel(
+  "~/mnt/projects_share/abSynT x cTOVA RNASeq_LD p1424.xlsx",
+  skip = 2
+) %>%
+  dplyr::select(1:8) %>%
+  rename(
+    sample.type = "...2",
+    animal.number = "...7",
+    sequencing.status = "...8"
   )
-# %>% 
-#   dplyr::select(1:6) %>% 
-#   rename(animal.number = "...6")
-# colnames(sample_sheet_p1425) <- str_replace_all(colnames(sample_sheet_p1425), " ", ".")
-# sample_sheet_p1425 <- sample_sheet_p1425 %>% 
-#   mutate_all(
-#     ~ str_replace(., " ", "_")
-#     ) %>% 
-#   mutate(
-#     tissue = str_split_i(sample.group, "_", i = 2),
-#     tissue = if_else(
-#       tissue == "spinal cord",
-#       "SC",
-#       tissue
-#     ),
-#     sample.group = str_split_i(sample.group, "_", i = 1),
-#     group = case_when(
-#       str_detect(sample.group, "CY") ~ "TovaCAR.+AAV",
-#       str_detect(sample.group, "TY") ~ "Tova.+AAV",
-#       str_detect(sample.group, "CN") ~ "TovaCAR.noAAV",
-#       str_detect(sample.group, "TN") ~ "Tova.noAAV"
-#     )
-#   )
+
+colnames(sample_sheet_p1424) <- str_replace_all(colnames(sample_sheet_p1424), " ", ".")
+
+sample_sheet_p1424 <- sample_sheet_p1424 %>%
+  mutate_all(
+    ~ str_replace(., " ", "_")
+  ) %>%
+  mutate(
+    tissue = case_when(
+      str_detect(sample.name, pattern = "[1-3]") ~ "ctx",
+      str_detect(sample.name, pattern = "[4-6]") ~ "blood"
+    ),
+    sample.group = str_split_i(sample.group, "_", i = 1),
+    group = paste(sample.group, tissue, sep = ".")
+  ) %>%
+  dplyr::filter(
+    is.na(sequencing.status)
+  ) %>% 
+  select(
+    - sequencing.status
+  ) %>% 
+  arrange(sample.name)
+
+
+write_delim(sample_sheet_p1424,
+            file = "config/sample_sheet.tsv",
+            delim = "\t")
+
+write_delim(units,
+            file = "config/units.tsv",
+            delim = "\t")
+
 
 units <- tibble(
-  sample.name = sample_sheet$sample.name,
-  read1 = list.files(path = "data/fastq", pattern = "*_R1", recursive = T, full.names = TRUE),
-  read2 = list.files(path = "data/fastq", pattern = "*_R2", recursive = T, full.names = TRUE)
+  read1 = list.files(
+    path = "data/fastq",
+    pattern = "*_R1",
+    recursive = TRUE,
+    full.names = TRUE
+  ),
+  read2 = list.files(
+    path = "data/fastq",
+    pattern = "*_R2",
+    recursive = TRUE,
+    full.names = TRUE
+  )
 )
 
-write_delim(sample_sheet,
-          file = "config/sample_sheet.tsv",
-          delim = "\t")
+units <- units %>%
+  mutate(
+    sample.group = str_extract(
+      string = read1,
+      pattern = "[0-9](M|R)"
+    ),
+    sample.name = str_extract(
+      string = read1,
+      pattern = "[0-9](M|R)"
+    )
+  ) %>%
+  select(
+    sample.name,
+    sample.group,
+    read1,
+    read2
+  )
+
+write_delim(sample_sheet_p1424,
+            file = "config/sample_sheet.tsv",
+            delim = "\t")
 
 write_delim(units,
             file = "config/units.tsv",

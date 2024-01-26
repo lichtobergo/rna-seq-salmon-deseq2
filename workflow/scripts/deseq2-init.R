@@ -52,7 +52,13 @@ for (effect in batch_effects) {
 
 
 # remove uninformative columns
-dds <- dds[rowSums(counts(dds)) > 1, ]
+print(snakemake@params[[2]])
+if (is.null(snakemake@config[["diffexp"]][["prefilter"]][["custom"]])) {
+  dds <- dds[rowSums(counts(dds)) > snakemake@params[[2]], ]
+} else {
+  dds <- dds[eval(parse(text = snakemake@params[[2]])), ]
+}
+# dds <- dds[rowSums(counts(dds)) > 1, ]
 # normalization and preprocessing
 dds <- DESeq(dds, parallel = parallel)
 

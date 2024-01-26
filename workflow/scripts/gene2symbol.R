@@ -1,3 +1,7 @@
+log <- file(snakemake@log[[1]], open = "wt")
+sink(log)
+sink(log, type = "message")
+
 library(biomaRt)
 suppressPackageStartupMessages(library(tidyverse))
 # useful error messages upon aborting
@@ -35,6 +39,7 @@ while ( class(mart)[[1]] != "Mart" ) {
         biomart = "ENSEMBL_MART_ENSEMBL",
         # dataset = "rnorvegicus_gene_ensembl",
         dataset = str_c(snakemake@params[["species"]], "_gene_ensembl"),
+        version = snakemake@config[["ref"]][["release"]],
         mirror = mart
       )
     },
@@ -78,8 +83,19 @@ g2g <- biomaRt::getBM(
   values = df$gene,
   mart = mart
 )
+g2g$external_gene_name <- ifelse(g2g$external_gene_name == "", g2g$ensembl_gene_id, g2g$external_gene_name)
 
-annotated <- merge(df, g2g, by.x="gene", by.y="ensembl_gene_id")
-annotated$gene <- ifelse(annotated$external_gene_name == '', annotated$gene, annotated$external_gene_name)
-annotated$external_gene_name <- NULL
+annotated <- g2g %>% 
+  left_join(
+    df,
+    by = c("ensembl_gene_id" = "gene")
+  ) %>%
+  dplyr::rename(gene = external_gene_name) %>% 
+  mutate(
+    gene = if_else(str_length(gene) == 0, ensembl_gene_id, gene)
+  )
+# annotated <- merge(g2g, df, by.x="ensemble_gene_id", by.y="gene")
+
+# annotated$gene <- ifelse(annotated$external_gene_name == '', annotated$gene, annotated$external_gene_name)
+# annotated$external_gene_name <- NULL
 write.table(annotated, snakemake@output[["symbol"]], sep='\t', row.names=F)

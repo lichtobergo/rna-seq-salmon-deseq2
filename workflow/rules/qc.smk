@@ -40,7 +40,7 @@ rule multiqc:
     input:
         expand(["results/qc/fastqc/{sample}_{pair}_fastqc.html",
                 "results/qc/fastqc/trimmed/{sample}_{pair}_trimmed_fastqc.html",
-                "results/trimmed/{sample}_{pair}.trimming_report.txt",
+                "data/trimmed/{sample}_{pair}.trimming_report.txt",
                 "results/pseudoaligment/quants/{sample}/quant.sf"],
                 sample=samples["sample.name"], pair=["R1", "R2"]),
     output:

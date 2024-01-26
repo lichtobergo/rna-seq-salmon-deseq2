@@ -34,6 +34,7 @@ contrast <- c(
 res <- results(
   dds,
   contrast = contrast,
+  alpha = snakemake@config[["diffexp"]][["sig-level"]][["diffexp"]],
   parallel = parallel
 )
 # shrink fold changes for lowly expressed genes
