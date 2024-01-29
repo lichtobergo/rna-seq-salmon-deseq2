@@ -104,6 +104,9 @@ fgseaRes <- fgsea(
 # Tidy the results:
 fgseaResTidy <- fgseaRes %>%
   as_tibble() %>%
+  dplyr::filter(
+    !is.na(pval)
+  ) %>%
   arrange(desc(NES)) %>%
   group_by(sign(NES)) %>% 
   slice(1:10)
@@ -123,10 +126,10 @@ gene.in.pathway <- geneSet %>%
 # Color the bar indicating whether or not the pathway was significant:
 fgseaResTidy$adjPvalue <- ifelse(fgseaResTidy$padj <= 0.05, "significant", "non-significant")
 cols <- c("non-significant" = "grey", "significant" = "red")
-title <- case_when(
-  GOterm == "GO:BP" ~ "GO:Biological processes pathways NES from GSEA",
-  GOterm == "GO:CC" ~ "GO:Cellular components pathways NES from GSEA",
-  GOterm == "GO:MF" ~ "GO:Molecular function pathways NES from GSEA"
+GO <- case_when(
+  GOterm == "GO:BP" ~ "GO:Biological Processes",
+  GOterm == "GO:CC" ~ "GO:Cellular Components",
+  GOterm == "GO:MF" ~ "GO:Molecular Function"
 )
 plot <- fgseaResTidy %>% 
   mutate(
@@ -134,16 +137,20 @@ plot <- fgseaResTidy %>%
       str_to_sentence() %>% 
       str_replace_all("_", " ")
   ) %>% 
-  ggplot(aes(reorder(pathway, NES), NES, fill = adjPvalue)) +
+  ggplot(aes(reorder(str_wrap(pathway, 50), NES), NES, fill = adjPvalue)) +
   geom_col() +
   scale_fill_manual(values = cols) +
   coord_flip() +
-  labs(x="Pathway", y="Normalized Enrichment Score",
-       title = title,
-       subtitle = "Top 10 up- and down regulated pathways") + 
+  labs(
+    x="Pathway",
+    y="Normalized Enrichment Score",
+    title = paste0("GSEA ", snakemake@params[[1]][2], " vs. ", snakemake@params[[1]][3]),
+    subtitle = str_glue("Top 10 up- and down regulated pathways from {GO}")
+  ) +  
   theme_minimal() +
   theme(
     plot.background = element_rect(),
+    legend.position = "top",
     plot.title.position = "plot",
     plot.tag.position = "left"
   )

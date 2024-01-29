@@ -1,4 +1,5 @@
 import pandas as pd
+import itertools
 
 #### load config and sample sheets #####
 
@@ -14,9 +15,47 @@ units = (
     .sort_index()
 )
 
+simpleContrasts={}
+
+def getSimpleContrasts(columns,rows):
+    simpleContrasts={}
+    i=0
+    # simple Contrasts e.g. treated vs untreated
+    for key in columns: # n*(n-1)/2 combinations
+        for values in itertools.combinations(rows[i],2):
+            if values[0]!=values[1]:
+                name=values[0]+"-vs-"+values[1]
+                simpleContrasts[name]=[key,values[0],values[1]]
+        i+=1
+    return simpleContrasts
+
+def estimateContrasts():
+    # columns=list(samples.keys())[1::] # get column names without overhead
+    columns=list(["group"])
+    rows=[]
+    for key in columns:
+        rows.append(list(samples.get(key).unique())) # get distinct rows values
+
+    formula=config["diffexp"]["model"]
+    if config["diffexp"]["contrasts"]["generate-contrasts"]:
+        global simpleContrasts
+        simpleContrasts=getSimpleContrasts(columns,rows)
+        print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
+        print(":::::::::::::::::: Trying to create all useful contrasts ::::::::::::::::::::::::::")
+        print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
+        config["diffexp"]["contrasts"]={**simpleContrasts}
+        print(config["diffexp"]["contrasts"])
+    else:
+        print("::::::::::::::::::::::::::::::::::::::::::::::")
+        print("::: Your custom formula design was choosen :::")
+        print("::::::::::::::::::::::::::::::::::::::::::::::")
+
 #samples = samples.iloc[:2]
 #READS = ["R1"",R2"]
 print(samples)
+
+estimateContrasts()
+
 
 def get_final_output():
     final_output = expand(
@@ -36,23 +75,34 @@ def get_final_output():
         if config["pca"]["labels"]:
             pca_variables.extend(config["pca"]["labels"])
         final_output.extend(
-            expand("results/plots/pca.{variable}.png", variable=pca_variables)
+            expand("results/plots/pca/pca.{variable}.png", variable=pca_variables)
         )
     final_output.append(
-        expand("results/plots/volcano.{contrast}.png", contrast=config["diffexp"]["contrasts"])
+        expand("results/plots/volcano/volcano.{contrast}.png", contrast=config["diffexp"]["contrasts"])
     )
     # if config["enrichment"]["fgsea"]["activate"]:
     if config["enrichment"]["fgsea"]["GO"]["activate"]:
         final_output.append(
-            expand("results/plots/gseaGO.{contrast}.png", contrast=config["diffexp"]["contrasts"])
+            expand("results/plots/gseaGO/gseaGO.{contrast}.png", contrast=config["diffexp"]["contrasts"])
         )
     if config["enrichment"]["fgsea"]["MSigDB"]["activate"]:
         final_output.append(
-            expand("results/plots/gseaMSigDB.{contrast}.png", contrast=config["diffexp"]["contrasts"])
+            expand("results/plots/gseaMSigDB/gseaMSigDB.{contrast}.png", contrast=config["diffexp"]["contrasts"])
         )
     final_output.append(
-        expand("results/plots/top10{dir}.{contrast}.png", dir=["Up", "Down"], contrast=config["diffexp"]["contrasts"])
+        expand("results/plots/topGenes/topGenes.{contrast}.png", contrast=config["diffexp"]["contrasts"])
     )
+    final_output.append(
+        expand(
+            "results/plots/{type}_plots.pdf", type=["pca", "topGenes", "volcano", "gseaGO", "gseaMSigDB"]
+        )
+    )
+    # final_output.append(
+    #     "results/plots/volcano_plots.pdf"
+    # )
+    # final_output.append(
+    #     "results/plots/topGenes_plots.pdf"
+    # )
     return final_output      
 
 def fq_dict_from_sample(wildcards):

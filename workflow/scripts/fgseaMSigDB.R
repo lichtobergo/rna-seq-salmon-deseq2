@@ -104,6 +104,7 @@ fgseaRes <- fgsea(
 # Tidy the results:
 fgseaResTidy <- fgseaRes %>%
   as_tibble() %>%
+  dplyr::filter(!is.na(pval)) %>%
   arrange(desc(NES)) %>%
   group_by(sign(NES)) %>% 
   slice(1:10)
@@ -134,16 +135,17 @@ plot <- fgseaResTidy %>%
       str_to_sentence() %>% 
       str_replace_all("_", " ")
   ) %>% 
-  ggplot(aes(reorder(pathway, NES), NES, fill = adjPvalue)) +
+  ggplot(aes(reorder(str_wrap(pathway, 50), NES), NES, fill = adjPvalue)) +
   geom_col() +
   scale_fill_manual(values = cols) +
   coord_flip() +
   labs(x="Pathway", y="Normalized Enrichment Score",
-       title = str_glue("MSigDB gene set {category} processes NES from GSEA"),
-       subtitle = "Top 10 up- and down regulated pathways") + 
+       title = paste0("GSEA ", snakemake@params[[1]][2], " vs. ", snakemake@params[[1]][3]),
+       subtitle = str_glue("Top 10 up- and down regulated pathways from MSigDB gene set {category}")) + 
   theme_minimal() +
   theme(
     plot.background = element_rect(),
+    legend.position = "top",
     plot.title.position = "plot",
     plot.tag.position = "left"
   )

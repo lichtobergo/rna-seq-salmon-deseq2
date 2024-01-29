@@ -26,7 +26,7 @@ ref:
   
 index: 
   activate: False
-  location: home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
+  location: /home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
 
 
 pca:
@@ -46,7 +46,7 @@ diffexp:
   prefilter:
     # counts for each gene (row) are summed and all rowsums below the threhsold
     # are filtered out
-    threshold: 10
+    threshold: 50
     # give custom formula which is not rowSums to filter out uninformative genes 
     custom:
   # variables for whome you are interested in whether they have an effect on
@@ -58,9 +58,9 @@ diffexp:
   variables_of_interest:
     sample.group:
       # any fold change will be relative to this factor level
-      base_level: R
+      base_level: TN
     tissue:
-      base_level: blood
+      base_level: SC
   # variables whose effect you want to model to separate them from your
   # variables_of_interest
   batch_effects:
@@ -84,18 +84,16 @@ diffexp:
 
     # contrasts for the deseq2 results method
   contrasts:
+    generate-contrasts: True
     # arbitrary-name:
     #    - columnname
     #    - effect1      # positive log2FC indicate upgregulated in this group
     #    - effect2      # negative log2FC indicate higher expression in this group
-    M.ctx-vs-R.ctx:
+    brain.TovaCAR.+AAV-vs-Tova.+AAV:
       - group
-      - M.ctx
-      - R.ctx
-    M.blood-vs-R.blood:
-      - group
-      - M.blood
-      - R.blood
+      - brain.TovaCAR.+AAV
+      - brain.Tova.+AAV
+   
 
 enrichment:
   fgsea:

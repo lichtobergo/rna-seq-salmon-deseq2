@@ -51,7 +51,7 @@ rule deseq2_init:
         "results/deseq2/dds_txi.RDS"
     output:
         "results/deseq2/dds.RDS",
-        "results/deseq2/normcounts.tsv",
+        temp("results/deseq2/normcounts.tsv"),
     params:
         get_bioc_species_name(),
         get_count_threshold()
@@ -68,7 +68,7 @@ rule plot_PCA:
         "results/deseq2/dds.RDS"
     output:
         # "results/plots/pca.png",
-        report("results/plots/pca.{variable}.png", "../report/pca.rst"),
+        report("results/plots/pca/pca.{variable}.png", "../report/pca.rst"),
     params:
         pca_labels = config["pca"]["labels"]
     conda:
@@ -82,7 +82,7 @@ rule diffexp:
     input:
         "results/deseq2/dds.RDS",
     output:
-        report("results/diffexp/{contrast}.diffexp.tsv", "../report/diffexp.rst"),
+        temp("results/diffexp/{contrast}.diffexp.tsv"),
     params:
         contrast = get_contrast
     log:
@@ -98,7 +98,7 @@ rule Enhanced_Volcano:
         "results/diffexp/{contrast}.diffexp.symbol.tsv"
     output:
         # "results/plots/pca.png",
-        report("results/plots/volcano.{contrast}.png", "../report/volcano.rst"),
+        report("results/plots/volcano/volcano.{contrast}.png", "../report/volcano.rst"),
     params:
         contrast = get_contrast
     conda:
@@ -113,7 +113,7 @@ rule fgsea_GO:
         "results/diffexp/{contrast}.diffexp.symbol.tsv"
     output:
         # "results/plots/pca.png",
-        report("results/plots/gseaGO.{contrast}.png", "../report/gsea.rst"),
+        report("results/plots/gseaGO/gseaGO.{contrast}.png", "../report/gsea.rst"),
     params:
         contrast = get_contrast
     conda:
@@ -128,7 +128,7 @@ rule fgsea_MSigDB:
         "results/diffexp/{contrast}.diffexp.symbol.tsv"
     output:
         # "results/plots/pca.png",
-        report("results/plots/gseaMSigDB.{contrast}.png", "../report/gsea.rst"),
+        report("results/plots/gseaMSigDB/gseaMSigDB.{contrast}.png", "../report/gsea.rst"),
     params:
         contrast = get_contrast
     conda:
@@ -143,12 +143,12 @@ rule plotTopGenes:
         res = "results/diffexp/{contrast}.diffexp.symbol.tsv",
         dds = "results/deseq2/dds.RDS",
     output:
-        upregulated = report("results/plots/top10Up.{contrast}.png", "../report/topGenes.rst"),
-        downregulated = report("results/plots/top10Down.{contrast}.png", "../report/topGenes.rst"),
+        topGenes = report("results/plots/topGenes/topGenes.{contrast}.png", "../report/topGenes.rst"),
+        # downregulated = report("results/plots/topGenes/top10Down.{contrast}.png", "../report/topGenes.rst"),
     params:
         contrast = get_contrast
     conda:
-        "../envs/topGenes.yaml"
+        "../envs/deseq2.yaml"
     log:
         "workflow/logs/plots/plotTopGenes/topGenes.{contrast}.log"
     script:

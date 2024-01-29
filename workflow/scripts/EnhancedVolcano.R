@@ -2,6 +2,7 @@ log <- file(snakemake@log[[1]], open = "wt")
 sink(log)
 sink(log, type = "message")
 
+library(svglite)
 # load results table 
 res <- readr::read_delim(
   file = snakemake@input[[1]], 
@@ -36,6 +37,9 @@ plot <- EnhancedVolcano::EnhancedVolcano(
 ggplot2::ggsave(
   plot = plot,
   filename = snakemake@output[[1]],
+  # width = 21.3,
+  height = 18,
+  units = "cm",
   dpi = 300
 )
 

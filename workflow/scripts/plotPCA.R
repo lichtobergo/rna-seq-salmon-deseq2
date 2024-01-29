@@ -81,7 +81,7 @@ pca_34 <- plotPCAcustom(
   returnData = TRUE
 )
 
-save.image("pcaDebug.RData")
+#save.image("pcaDebug.RData")
 
 covariate <- snakemake@wildcards[["variable"]]
 percent_var <- round(100 * attr(pca_12, "percentVar"))
