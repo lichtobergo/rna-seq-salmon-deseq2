@@ -54,7 +54,8 @@ def estimateContrasts():
 #READS = ["R1"",R2"]
 print(samples)
 
-estimateContrasts()
+if config["diffexp"]["generate-contrasts"]:
+    estimateContrasts()
 
 
 def get_final_output():
@@ -94,7 +95,7 @@ def get_final_output():
     )
     final_output.append(
         expand(
-            "results/plots/{type}_plots.pdf", type=["pca", "topGenes", "volcano", "gseaGO", "gseaMSigDB"]
+            "results/plots/{type}_plots.pdf", type=["topGenes", "volcano", "gseaGO", "gseaMSigDB"]
         )
     )
     # final_output.append(

@@ -29,9 +29,23 @@ res <- read_delim(
   escape_double = FALSE,
   trim_ws = TRUE
 )
-snakemake@input[["res"]]
-
 dds <- readRDS(snakemake@input[["dds"]])
+
+
+
+#_______________Initialize snakemake variables_____________________#
+
+variablesOfInterest <- snakemake@config[["diffexp"]][["variables_of_interest"]]
+groupingVar <- snakemake@config[["topGenes-plot"]][["grouping-var"]]
+if (is.null(snakemake@config[["topGenes-plot"]][["color-var"]])) {
+  colorVar <- snakemake@config[["topGenes-plot"]][["grouping-var"]]
+} else {
+  colorVar <- snakemake@config[["topGenes-plot"]][["color-var"]]
+}
+contrast <- snakemake@params[[1]]
+
+# save workspace image for debugging
+# save.image(file = "debugR.RData")
 
 
 
@@ -60,17 +74,15 @@ topGenes <- splitTbl %>%
         \(y, idy) plotCounts(
           dds = dds,
           gene = y,
-          intgroup = c(names(snakemake@config[["diffexp"]][["variables_of_interest"]]), "group"),
+          intgroup = c(names(variablesOfInterest)),
           returnData = TRUE
         ) 
       ) %>% 
       list_rbind(names_to = "gene") %>% 
       dplyr::filter(
-        group %in% snakemake@config[["diffexp"]][["contrasts"]][[
-          snakemake@wildcards[["contrast"]]
-          ]]
+        .data[[groupingVar]] %in% contrast
       ) %>% 
-      ggplot(aes(x = sample.group, y = count, color = group)) +
+      ggplot(aes(x = .data[[groupingVar]], y = count, color = .data[[colorVar]])) +
       geom_boxplot(alpha = 0.1, show.legend = FALSE) +
       geom_jitter(size = 2, position = position_jitter(0.2)) +
       scale_y_continuous(labels = scales::label_comma()) +
@@ -99,9 +111,6 @@ topGenes <- splitTbl %>%
       )
   )
 
-"grey20"
-
-
 # ggsave(
 #   filename = snakemake@output[["upregulated"]],
 #   plot = topGenes$upgregulated,
@@ -118,7 +127,7 @@ plot <- (topGenes$upgregulated + theme(plot.margin = unit(c(0,20,0,0), "pt"))) +
   (topGenes$downregulated + theme(plot.margin = unit(c(0,0,0,20), "pt"))) +
   plot_layout(guides = "collect") +
   plot_annotation(
-    title = paste(snakemake@params[[1]][2], " vs. ", snakemake@params[[1]][3]),
+    title = paste(contrast[2], " vs. ", contrast[3]),
     # subtitle = str_glue("The first 4 principal components of the data are plotted and samples are color coded for the covariate **{covariate}**"),
     # caption = 'Each dot represents a sample and is labelled with the sample name.',
     theme = theme(text = element_text(size = 10), plot.subtitle = element_textbox_simple())

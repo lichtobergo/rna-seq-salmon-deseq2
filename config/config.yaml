@@ -26,7 +26,7 @@ ref:
   
 index: 
   activate: False
-  location: /home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
+  location: /home/haberl/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
 
 
 pca:
@@ -39,7 +39,13 @@ pca:
   # - relatively_uninteresting_variable_X
   # - possible_batch_effect_Y
   labels:
-    - group
+
+topGenes-plot:
+  # set the variable from the sample sheet to use for grouping on x-axis in plot
+  grouping-var: "sample.group"
+  # set the variable from  the sample sheet to use for coloring the samples  in plots
+  # normally set to the same variable as grouping
+  color-var: 
 
 diffexp:
   # set the threshold to filter out uninformative genes
@@ -52,15 +58,15 @@ diffexp:
   # variables for whome you are interested in whether they have an effect on
   # expression levels
   # significance level to use for volcano, ma- and qq-plots
+  # automatically generate all possible contrasts of the group column if present
+  generate-contrasts: False
   sig-level:
     diffexp: 0.05
     volcano-plot: 0.05
   variables_of_interest:
     sample.group:
       # any fold change will be relative to this factor level
-      base_level: TN
-    tissue:
-      base_level: SC
+      base_level: ctrl
   # variables whose effect you want to model to separate them from your
   # variables_of_interest
   batch_effects:
@@ -80,19 +86,26 @@ diffexp:
   # If you want to introduce different assumptions into your model, you can
   # specify a different model to use, for example skipping the interaction:
   # model: ~jointly_handled + treatment_1 + treatment_2
-  model: ~group
+  model: ~sample.group
 
     # contrasts for the deseq2 results method
   contrasts:
-    generate-contrasts: True
     # arbitrary-name:
     #    - columnname
     #    - effect1      # positive log2FC indicate upgregulated in this group
     #    - effect2      # negative log2FC indicate higher expression in this group
-    brain.TovaCAR.+AAV-vs-Tova.+AAV:
-      - group
-      - brain.TovaCAR.+AAV
-      - brain.Tova.+AAV
+    hypoxic-vs-normoxic:
+      - sample.group
+      - hypoxic
+      - normoxic
+    hypoxic-vs-ctrl:
+      - sample.group
+      - hypoxic
+      - ctrl
+    normoxic-vs-ctrl:
+      - sample.group
+      - normoxic
+      - ctrl
    
 
 enrichment:
