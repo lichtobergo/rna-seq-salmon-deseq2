@@ -35,7 +35,13 @@ dds <- readRDS(snakemake@input[["dds"]])
 
 #_______________Initialize snakemake variables_____________________#
 
-variablesOfInterest <- snakemake@config[["diffexp"]][["variables_of_interest"]]
+variablesOfInterest <- names(snakemake@config[["diffexp"]][["variables_of_interest"]])
+if (!is.null(snakemake@config[["diffexp"]][["batch_effects"]])) {
+  variablesOfInterest <- c(variablesOfInterest, snakemake@config[["diffexp"]][["batch_effects"]])
+}
+if (!is.null(snakemake@config[["pca"]][["labels"]])) {
+  variablesOfInterest <- c(variablesOfInterest, snakemake@config[["pca"]][["labels"]])
+}
 groupingVar <- snakemake@config[["topGenes-plot"]][["grouping-var"]]
 if (is.null(snakemake@config[["topGenes-plot"]][["color-var"]])) {
   colorVar <- snakemake@config[["topGenes-plot"]][["grouping-var"]]
@@ -46,7 +52,7 @@ contrast <- snakemake@params[[1]]
 
 # save workspace image for debugging
 # save.image(file = "debugR.RData")
-
+# print("Image saved!")
 
 
 ##______________________VISUALIZATION______________________________#
@@ -74,7 +80,7 @@ topGenes <- splitTbl %>%
         \(y, idy) plotCounts(
           dds = dds,
           gene = y,
-          intgroup = c(names(variablesOfInterest)),
+          intgroup = variablesOfInterest,
           returnData = TRUE
         ) 
       ) %>% 
@@ -135,7 +141,6 @@ plot <- (topGenes$upgregulated + theme(plot.margin = unit(c(0,20,0,0), "pt"))) +
   theme(legend.position = "bottom")
 
 ggsave(plot = plot, filename = snakemake@output[["topGenes"]], width=20, height = 11, units = "cm")
-
 
 
 
