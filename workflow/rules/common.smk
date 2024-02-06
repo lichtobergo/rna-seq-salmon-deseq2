@@ -37,7 +37,7 @@ def estimateContrasts():
         rows.append(list(samples.get(key).unique())) # get distinct rows values
 
     formula=config["diffexp"]["model"]
-    if config["diffexp"]["contrasts"]["generate-contrasts"]:
+    if config["diffexp"]["generate-contrasts"]:
         global simpleContrasts
         simpleContrasts=getSimpleContrasts(columns,rows)
         print(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::")
