@@ -9,3 +9,4 @@ dependencies:
   - r-patchwork =1.2.0
   - r-ggrepel =0.9.5
   - r-ggtext =0.1.2
+  - r-rcolorbrewer =1.1_3
