@@ -85,6 +85,11 @@ pca_34 <- plotPCAcustom(
 
 covariate <- snakemake@wildcards[["variable"]]
 percent_var <- round(100 * attr(pca_12, "percentVar"))
+if (length(levels(colData(rld)[[covariate]])) > 8) {
+   color_pal <- RColorBrewer::brewer.pal(12, "Paired")
+} else {
+  color_pal <- RColorBrewer::brewer.pal(8, "Dark2")
+}
 
 plot_12<- ggplot(
   data = pca_12,
