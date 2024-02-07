@@ -107,8 +107,7 @@ plot_12<- ggplot(
     max.overlaps = 20,
     show.legend = FALSE
   ) +
-  scale_color_brewer(palette = "Dark2") +
-  # scale_color_manual(values = c("#66c2a5", "#fc8d62")) +
+  scale_color_manual(values = color_pal) +
   xlab(paste0("PC1: ", percent_var[1], "% variance")) +
   ylab(paste0("PC2: ", percent_var[2], "% variance")) +
   theme_bw(base_size = 8) +
@@ -149,8 +148,7 @@ plot_34 <- ggplot(
     max.overlaps = 20,
     show.legend = FALSE
   ) +
-  scale_color_brewer(palette = "Dark2") +
-  # scale_color_manual(values = c("#66c2a5", "#fc8d62")) +
+  scale_color_manual(values = color_pal) +
   xlab(paste0("PC3: ", percent_var[1], "% variance")) +
   ylab(paste0("PC4: ", percent_var[2], "% variance")) +
   theme_bw(base_size = 8) + 
