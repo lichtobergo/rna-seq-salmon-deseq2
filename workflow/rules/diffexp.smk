@@ -42,7 +42,7 @@ rule gene_2_symbol:
     log:
         "workflow/logs/gene2symbol/{prefix}.log",
     conda:
-        "../envs/biomart.yaml"
+        "../envs/deseq2.yaml"
     script:
         "../scripts/gene2symbol.R"
 
@@ -102,7 +102,7 @@ rule Enhanced_Volcano:
     params:
         contrast = get_contrast
     conda:
-        "../envs/EnhancedVolcano.yaml"
+        "../envs/deseq2.yaml"
     log:
         "workflow/logs/plots/volcano/volcano.{contrast}.log"
     script:
@@ -117,7 +117,7 @@ rule fgsea_GO:
     params:
         contrast = get_contrast
     conda:
-        "../envs/fgsea.yaml"
+        "../envs/deseq2.yaml"
     log:
         "workflow/logs/plots/fgsea/fgseaGO.{contrast}.log"
     script:
@@ -132,7 +132,7 @@ rule fgsea_MSigDB:
     params:
         contrast = get_contrast
     conda:
-        "../envs/fgsea.yaml"
+        "../envs/deseq2.yaml"
     log:
         "workflow/logs/plots/fgsea/fgseaMSigDB.{contrast}.log"
     script:
