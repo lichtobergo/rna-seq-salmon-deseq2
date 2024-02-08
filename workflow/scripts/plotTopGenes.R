@@ -117,18 +117,6 @@ topGenes <- splitTbl %>%
       )
   )
 
-# ggsave(
-#   filename = snakemake@output[["upregulated"]],
-#   plot = topGenes$upgregulated,
-#   dpi = 300
-# )
-# 
-# ggsave(
-#   filename = snakemake@output[["downregulated"]],
-#   plot = topGenes$downregulated,
-#   dpi = 300
-# )
-
 plot <- (topGenes$upgregulated + theme(plot.margin = unit(c(0,20,0,0), "pt"))) +
   (topGenes$downregulated + theme(plot.margin = unit(c(0,0,0,20), "pt"))) +
   plot_layout(guides = "collect") +
@@ -141,6 +129,7 @@ plot <- (topGenes$upgregulated + theme(plot.margin = unit(c(0,20,0,0), "pt"))) +
   theme(legend.position = "bottom")
 
 ggsave(plot = plot, filename = snakemake@output[["topGenes"]], width=20, height = 11, units = "cm")
+
 
 
 

@@ -152,9 +152,6 @@ plot_34 <- ggplot(
   xlab(paste0("PC3: ", percent_var[1], "% variance")) +
   ylab(paste0("PC4: ", percent_var[2], "% variance")) +
   theme_bw(base_size = 8) + 
-  # ggtitle(
-  #   label = str_glue("Principal components 3 and 4 color coded for covariate **einseheshehehehehehehehehehehehehehehehehehehehr langer string**")
-  # ) +
   theme(
     text = element_text(colour = "grey30"),
     axis.text = element_text(colour = "grey30"),
