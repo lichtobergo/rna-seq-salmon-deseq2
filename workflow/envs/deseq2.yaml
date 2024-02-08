@@ -10,3 +10,7 @@ dependencies:
   - r-ggrepel =0.9.5
   - r-ggtext =0.1.2
   - r-rcolorbrewer =1.1_3
+  - r-readr =2.1.5
+  - bioconductor-fgsea =1.28.0
+  - r-msigdbr =7.5.1
+  - bioconductor-biomart =2.58.0
