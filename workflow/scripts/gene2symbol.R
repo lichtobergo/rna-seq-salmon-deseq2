@@ -86,16 +86,13 @@ g2g <- biomaRt::getBM(
 g2g$external_gene_name <- ifelse(g2g$external_gene_name == "", g2g$ensembl_gene_id, g2g$external_gene_name)
 
 annotated <- g2g %>% 
-  left_join(
+  right_join(
     df,
     by = c("ensembl_gene_id" = "gene")
   ) %>%
   dplyr::rename(gene = external_gene_name) %>% 
   mutate(
-    gene = if_else(str_length(gene) == 0, ensembl_gene_id, gene)
+    gene = if_else(str_length(gene) == 0, ensembl_gene_id, gene),
+    gene = if_else(is.na(gene), ensembl_gene_id, gene)
   )
-# annotated <- merge(g2g, df, by.x="ensemble_gene_id", by.y="gene")
-
-# annotated$gene <- ifelse(annotated$external_gene_name == '', annotated$gene, annotated$external_gene_name)
-# annotated$external_gene_name <- NULL
 write.table(annotated, snakemake@output[["symbol"]], sep='\t', row.names=F)
