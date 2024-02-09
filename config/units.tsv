@@ -1,20 +1,11 @@
-sample.name	read1	read2
-H01	data/fastq/H01_R1.fastq.gz	data/fastq/H01_R2.fastq.gz
-H02	data/fastq/H02_R1.fastq.gz	data/fastq/H02_R2.fastq.gz
-H03	data/fastq/H03_R1.fastq.gz	data/fastq/H03_R2.fastq.gz
-H04	data/fastq/H04_R1.fastq.gz	data/fastq/H04_R2.fastq.gz
-H05	data/fastq/H05_R1.fastq.gz	data/fastq/H05_R2.fastq.gz
-H06	data/fastq/H06_R1.fastq.gz	data/fastq/H06_R2.fastq.gz
-H07	data/fastq/H07_R1.fastq.gz	data/fastq/H07_R2.fastq.gz
-N01	data/fastq/N01_R1.fastq.gz	data/fastq/N01_R2.fastq.gz
-N02	data/fastq/N02_R1.fastq.gz	data/fastq/N02_R2.fastq.gz
-N03	data/fastq/N03_R1.fastq.gz	data/fastq/N03_R2.fastq.gz
-N05	data/fastq/N05_R1.fastq.gz	data/fastq/N05_R2.fastq.gz
-N06	data/fastq/N06_R1.fastq.gz	data/fastq/N06_R2.fastq.gz
-N07	data/fastq/N07_R1.fastq.gz	data/fastq/N07_R2.fastq.gz
-R01	data/fastq/R01_R1.fastq.gz	data/fastq/R01_R2.fastq.gz
-R02	data/fastq/R02_R1.fastq.gz	data/fastq/R02_R2.fastq.gz
-R04	data/fastq/R04_R1.fastq.gz	data/fastq/R04_R2.fastq.gz
-R05	data/fastq/R05_R1.fastq.gz	data/fastq/R05_R2.fastq.gz
-R06	data/fastq/R06_R1.fastq.gz	data/fastq/R06_R2.fastq.gz
-R07	data/fastq/R07_R1.fastq.gz	data/fastq/R07_R2.fastq.gz
+sample.name	sample.group	read1	read2
+1M	1M	data/fastq/1M_R1.fastq.gz	data/fastq/1M_R2.fastq.gz
+1R	1R	data/fastq/1R_R1.fastq.gz	data/fastq/1R_R2.fastq.gz
+2M	2M	data/fastq/2M_R1.fastq.gz	data/fastq/2M_R2.fastq.gz
+2R	2R	data/fastq/2R_R1.fastq.gz	data/fastq/2R_R2.fastq.gz
+3M	3M	data/fastq/3M_R1.fastq.gz	data/fastq/3M_R2.fastq.gz
+3R	3R	data/fastq/3R_R1.fastq.gz	data/fastq/3R_R2.fastq.gz
+4M	4M	data/fastq/4M_R1.fastq.gz	data/fastq/4M_R2.fastq.gz
+4R	4R	data/fastq/4R_R1.fastq.gz	data/fastq/4R_R2.fastq.gz
+5M	5M	data/fastq/5M_R1.fastq.gz	data/fastq/5M_R2.fastq.gz
+5R	5R	data/fastq/5R_R1.fastq.gz	data/fastq/5R_R2.fastq.gz

@@ -26,7 +26,7 @@ ref:
   
 index: 
   activate: False
-  location: /home/haberl/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
+  location: home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
 
 
 pca:
