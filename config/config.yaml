@@ -11,22 +11,22 @@ units: config/units.tsv
 
 trimming:
   # skip trimming: false or true
-  skip: False
+  skip: True
   # the sequencing adapter
   adapter: ""
 
 ref:
   # Ensembl species name
-  species: rattus_norvegicus
-  # Ensembl release
-  release: 110
+  species: mus_musculus 
+  # Ensembl/GENCODE release
+  release: M35
   # Ensembl assembly
-  assembly: mRatBN7.2
-  g2n: resources/biomart.Rnor.tsv
+  assembly: GRCm39
+  g2n:
   
 index: 
   activate: False
-  location: home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
+  location: home/light/references/mouse/salmon_index_GENCODE_M35
 
 
 pca:
@@ -39,11 +39,13 @@ pca:
   # - relatively_uninteresting_variable_X
   # - possible_batch_effect_Y
   labels:
-    - group
+    - groups
+    - mouseID
+    - genotype
     
 topGenes-plot:
   # set the variable from the sample sheet to use for grouping on x-axis in plot
-  grouping-var: "group"
+  grouping-var: "groups"
   # set the variable from  the sample sheet to use for coloring the samples  in plots
   # normally set to the same variable as grouping
   color-var: 
@@ -59,16 +61,14 @@ diffexp:
   # variables for whome you are interested in whether they have an effect on
   # expression levels
   # significance level to use for volcano, ma- and qq-plots
-  generate-contrasts: False
+  generate-contrasts: True
   sig-level:
     diffexp: 0.05
     volcano-plot: 0.05
   variables_of_interest:
-    sample.group:
+    groups:
       # any fold change will be relative to this factor level
-      base_level: R
-    tissue:
-      base_level: blood
+      base_level: unstim_WT 
   # variables whose effect you want to model to separate them from your
   # variables_of_interest
   batch_effects:
@@ -88,7 +88,7 @@ diffexp:
   # If you want to introduce different assumptions into your model, you can
   # specify a different model to use, for example skipping the interaction:
   # model: ~jointly_handled + treatment_1 + treatment_2
-  model: ~group
+  model: ~groups
 
     # contrasts for the deseq2 results method
   contrasts:

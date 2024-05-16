@@ -1,2 +1,3 @@
-# project_template
-Template repository for RNA sequencing projects
+
+# Repository for bulk RNA Seq analysis of TFEB *in vitro* data
+Describe the project and outline analysis steps

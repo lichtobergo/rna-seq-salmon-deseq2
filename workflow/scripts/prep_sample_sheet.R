@@ -2,22 +2,12 @@ library(tidyverse)
 library(readxl)
 
 sample_sheet <- read_delim(
-  "config/sample_sheet.txt", 
+  "config/sample_sheet.tsv", 
   delim = "\t", escape_double = FALSE, 
   col_types = cols(Comments = col_skip()), 
   trim_ws = TRUE
 ) %>% 
-  dplyr::filter(
-    sample.name != "N_04"
-  ) %>% 
-  relocate(
-    sample.name,
-    .before = sample.number
-  ) %>% 
-  arrange(sample.name) %>% 
-  mutate(
-    sample.name = str_remove(sample.name, "_")
-  )
+  arrange(sample.name)
 # %>% 
 #   dplyr::select(1:6) %>% 
 #   rename(animal.number = "...6")
@@ -47,17 +37,6 @@ units <- tibble(
   read1 = list.files(path = "data/fastq", pattern = "*_R1", recursive = T, full.names = TRUE),
   read2 = list.files(path = "data/fastq", pattern = "*_R2", recursive = T, full.names = TRUE)
 )
-
-# remove sample H_04 because it is likely an outlier based on pca and fastQC
-units <- units %>% 
-  dplyr::filter(
-    sample.name != "H04"
-  )
-sample_sheet <- sample_sheet %>% 
-  dplyr::filter(
-    sample.name != "H04"
-  )
-
 
 write_delim(sample_sheet,
           file = "config/sample_sheet.tsv",
