@@ -8,6 +8,7 @@ library(readr)
 library(DESeq2)
 library(patchwork)
 library(ggtext)
+library(ragg)
 
 
 
@@ -128,7 +129,7 @@ plot <- (topGenes$upgregulated + theme(plot.margin = unit(c(0,20,0,0), "pt"))) +
   ) &
   theme(legend.position = "bottom")
 
-ggsave(plot = plot, filename = snakemake@output[["topGenes"]], width=20, height = 11, units = "cm")
+ggsave(plot = plot, filename = snakemake@output[["topGenes"]], device = agg_png(), width=20, height = 11, units = "cm", scaling = .8)
 
 
 

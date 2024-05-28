@@ -77,12 +77,13 @@ while ( class(mart)[[1]] != "Mart" ) {
 df <- read.table(snakemake@input[["counts"]], sep='\t', header=1)
 
 g2g <- biomaRt::getBM(
-  attributes = c( "ensembl_gene_id",
+  attributes = c( "ensembl_gene_id_version",
                   "external_gene_name"),
-  filters = "ensembl_gene_id",
+  filters = "ensembl_gene_id_version",
   values = df$gene,
   mart = mart
-)
+) %>%
+dplyr::rename(ensembl_gene_id = ensembl_gene_id_version)
 g2g$external_gene_name <- ifelse(g2g$external_gene_name == "", g2g$ensembl_gene_id, g2g$external_gene_name)
 
 annotated <- g2g %>% 

@@ -59,7 +59,10 @@ library(ggtext)
 # load DESeq2 data
 dds <- readRDS(snakemake@input[[1]])
 # dds <- DESeq(dds)
-
+coldata <- dds@colData %>% 
+  as_tibble(rownames = "sample") %>% 
+  mutate(across(where(is.numeric), as_factor))
+dds@colData <- as(data.frame(coldata, row.names = "sample"), "DataFrame")
 
 rld <- rlog(
   object = dds,

@@ -26,6 +26,7 @@ res <- readr::read_delim(
 plot <- EnhancedVolcano::EnhancedVolcano(
   toptable = res,
   lab = res$gene,
+  xlim = c(-8,8),
   x = "log2FoldChange",
   y = "padj",
   ylab = bquote(~-Log[10] ~ "adjusted" ~ italic(P)),

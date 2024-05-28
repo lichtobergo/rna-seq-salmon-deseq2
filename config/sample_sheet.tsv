@@ -1,4 +1,4 @@
-sample.name	sampleID	groups	timepoint	mouseID	genotype
+sample.name	sampleID	group	timepoint	mouseID	genotype
 147KO_BCR	147KO_BCR	BCR_KO	18h	147	KO
 147KO_CD40	147KO_CD40	CD40_KO	18h	147	KO
 147KO_unstim	147KO_unstim	unstim_KO	18h	147	KO
