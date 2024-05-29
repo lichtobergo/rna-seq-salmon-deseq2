@@ -26,7 +26,7 @@ ref:
   
 index: 
   activate: False
-  location: home/light/references/salmon_indices/rat/mRatBN7.2.ensembl_v110
+  location: home/haberl/references/rat/salmon_index_mRatBN7.2_v112
 
 
 pca:
@@ -43,10 +43,10 @@ pca:
     
 topGenes-plot:
   # set the variable from the sample sheet to use for grouping on x-axis in plot
-  grouping-var: "group"
+  grouping-var: "sample.group"
   # set the variable from  the sample sheet to use for coloring the samples  in plots
   # normally set to the same variable as grouping
-  color-var: 
+  color-var:
 
 diffexp:
   # set the threshold to filter out uninformative genes
@@ -59,16 +59,16 @@ diffexp:
   # variables for whome you are interested in whether they have an effect on
   # expression levels
   # significance level to use for volcano, ma- and qq-plots
-  generate-contrasts: False
+  generate-contrasts: True
   sig-level:
     diffexp: 0.05
     volcano-plot: 0.05
   variables_of_interest:
-    sample.group:
+    group:
       # any fold change will be relative to this factor level
-      base_level: R
+      base_level:
     tissue:
-      base_level: blood
+      base_level:
   # variables whose effect you want to model to separate them from your
   # variables_of_interest
   batch_effects:
