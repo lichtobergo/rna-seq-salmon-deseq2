@@ -39,11 +39,11 @@ pca:
   # - relatively_uninteresting_variable_X
   # - possible_batch_effect_Y
   labels:
-    - group
+    - sample.group
     
 topGenes-plot:
   # set the variable from the sample sheet to use for grouping on x-axis in plot
-  grouping-var: "sample.group"
+  grouping-var: "group"
   # set the variable from  the sample sheet to use for coloring the samples  in plots
   # normally set to the same variable as grouping
   color-var:
@@ -66,9 +66,7 @@ diffexp:
   variables_of_interest:
     group:
       # any fold change will be relative to this factor level
-      base_level:
-    tissue:
-      base_level:
+      base_level: "brain.OVA.CN"
   # variables whose effect you want to model to separate them from your
   # variables_of_interest
   batch_effects:
