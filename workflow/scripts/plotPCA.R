@@ -1,7 +1,7 @@
 log <- file(snakemake@log[[1]], open = "wt")
 sink(log)
 sink(log, type = "message")
-
+# save.image(file = "debugR.RData")
 # Define custom PCA plotting function
 plotPCAcustom = function(object, intgroup="condition",
                          ntop=500, returnData=FALSE, pcsToUse=1:2)
@@ -56,6 +56,7 @@ suppressPackageStartupMessages(library(tidyverse))
 library(patchwork)
 library(ggtext)
 
+print(snakemake@wildcards[["variable"]])
 # load DESeq2 data
 dds <- readRDS(snakemake@input[[1]])
 # dds <- DESeq(dds)
@@ -86,7 +87,11 @@ pca_34 <- plotPCAcustom(
 covariate <- snakemake@wildcards[["variable"]]
 percent_var <- round(100 * attr(pca_12, "percentVar"))
 if (length(levels(colData(rld)[[covariate]])) > 8) {
-   color_pal <- RColorBrewer::brewer.pal(12, "Paired")
+  if (length(levels(colData(rld)[[covariate]])) > 12) {
+    color_pal <- viridis::viridis_pal()(length(levels(colData(rld)[[covariate]])))
+  } else {
+    color_pal <- RColorBrewer::brewer.pal(12, "Paired")
+  }   
 } else {
   color_pal <- RColorBrewer::brewer.pal(8, "Dark2")
 }
@@ -175,4 +180,4 @@ ggsave(plot = plot, filename = snakemake@output[[1]], width=20, height = 11, uni
 # print(plot)
 # dev.off()
 
-#save.image(file = "debugR.RData")
+# save.image(file = "debugR.RData")
