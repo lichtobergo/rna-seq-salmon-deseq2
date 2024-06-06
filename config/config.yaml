@@ -59,7 +59,7 @@ diffexp:
   # variables for whome you are interested in whether they have an effect on
   # expression levels
   # significance level to use for volcano, ma- and qq-plots
-  generate-contrasts: True
+  generate-contrasts: False
   sig-level:
     diffexp: 0.05
     volcano-plot: 0.05
@@ -94,14 +94,102 @@ diffexp:
     #    - columnname
     #    - effect1      # positive log2FC indicate upgregulated in this group
     #    - effect2      # negative log2FC indicate higher expression in this group
-    M.ctx-vs-R.ctx:
+    blood.bSYN.CY-vs-blood.bSYN.CN:
       - group
-      - M.ctx
-      - R.ctx
-    M.blood-vs-R.blood:
+      - blood.bSYN.CY
+      - blood.bSYN.CN
+    blood.bSYN.TY-vs-blood.bSYN.TN:
       - group
-      - M.blood
-      - R.blood
+      - blood.bSYN.TY
+      - blood.bSYN.TN
+    blood.OVA.CN-vs-blood.bSYN.CN:
+      - group
+      - blood.OVA.CN
+      - blood.bSYN.CN
+    blood.OVA.CY-vs-blood.bSYN.CY:
+      - group
+      - blood.OVA.CY
+      - blood.bSYN.CY
+    blood.OVA.CY-vs-blood.OVA.CN:
+      - group
+      - blood.OVA.CY
+      - blood.OVA.CN
+    blood.OVA.TN-vs-blood.bSYN.TN:
+      - group
+      - blood.OVA.TN
+      - blood.bSYN.TN
+    blood.OVA.TY-vs-blood.bSYN.TY:
+      - group
+      - blood.OVA.TY
+      - blood.bSYN.TY
+    blood.OVA.TY-vs-blood.OVA.TN:
+      - group
+      - blood.OVA.TY
+      - blood.OVA.TN
+    brain.bSYN.CY-vs-brain.bSYN.CN:
+      - group
+      - brain.bSYN.CY
+      - brain.bSYN.CN
+    brain.bSYN.TY-vs-brain.bSYN.TN:
+      - group
+      - brain.bSYN.TY
+      - brain.bSYN.TN
+    brain.OVA.CN-vs-brain.bSYN.CN:
+      - group
+      - brain.OVA.CN
+      - brain.bSYN.CN
+    brain.OVA.CY-vs-brain.bSYN.CY:
+      - group
+      - brain.OVA.CY
+      - brain.bSYN.CY
+    brain.OVA.CY-vs-brain.OVA.CN:
+      - group
+      - brain.OVA.CY
+      - brain.OVA.CN
+    brain.OVA.TN-vs-brain.bSYN.TN:
+      - group
+      - brain.OVA.TN
+      - brain.bSYN.TN
+    brain.OVA.TY-vs-brain.bSYN.TY:
+      - group
+      - brain.OVA.TY
+      - brain.bSYN.TY
+    brain.OVA.TY-vs-brain.OVA.TN:
+      - group
+      - brain.OVA.TY
+      - brain.OVA.TN
+    SC.bSYN.CY-vs-SC.bSYN.CN:
+      - group
+      - SC.bSYN.CY
+      - SC.bSYN.CN
+    SC.bSYN.TY-vs-SC-bSYN.TN:
+     - group
+     - SC.bSYN.TY
+     - SC.bSYN.TN
+    SC.OVA.CN-vs-SC.bSYN.CN:
+      - group
+      - SC.OVA.CN
+      - SC.bSYN.CN
+    SC.OVA.CY-vs-SC.bSYN.CY:
+      - group
+      - SC.OVA.CY
+      - SC.bSYN.CY
+    SC.OVA.CY-vs-SC.OVA.CN:
+      - group
+      - SC.OVA.CY
+      - SC.OVA.CN
+    SC.OVA.TN-vs-SC.bSYN.TN:
+      - group
+      - SC.OVA.TN
+      - SC.bSYN.TN
+    SC.OVA.TY-vs-SC.bSYN.TY:
+      - group
+      - SC.OVA.TY
+      - SC.bSYN.TY
+    SC.OVA.TY-vs-SC.OVA.TN:
+      - group
+      - SC.OVA.TY
+      - SC.bSYN.TY
 
 enrichment:
   fgsea:
